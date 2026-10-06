@@ -1,0 +1,12 @@
+# Perfiles de navegador usados en pruebas locales (no son parte del proyecto)
+.browser-debug/
+.browser-dialog/
+.browser-dialog-reduced/
+.browser-grid/
+.browser-grid-2/
+.browser-mobile/
+.browser-smoke/
+.browser-table/
+.browser-test/
+.browser-test-2/
+.browser-test-light/

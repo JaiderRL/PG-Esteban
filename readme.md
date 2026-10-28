@@ -24,6 +24,8 @@ No hace falta instalar paquetes ni compilar la aplicación. La consulta de datos
 - **Búsqueda:** acepta nombres en español, símbolos, números atómicos y alias incluidos en los datos. Ignora diferencias de mayúsculas y tildes; por ejemplo, `oxigeno`, `O` y `8` permiten encontrar oxígeno.
 - **Sugerencias:** ofrece hasta seis resultados mientras escribes. Las coincidencias exactas de número atómico o símbolo tienen prioridad.
 - **Filtros por familia:** permite seleccionar varias categorías y combinarlas con la búsqueda. Incluye metales alcalinos, alcalinotérreos, de transición y postransición; metaloides, no metales, halógenos, gases nobles, lantánidos y actínidos.
+- **Explicación de cada familia:** al activar un filtro aparece, bajo los filtros, una nota con el nombre de la familia, su número de elementos y una descripción breve; si hay varias activas, se muestra la última seleccionada. En la leyenda «Familias químicas», cada familia es un botón que abre una ventana con la misma explicación y un botón **Ver en la tabla** que aplica ese filtro. La ventana se cierra con la ×, `Escape`, un clic fuera o un segundo clic en la familia.
+- **Identidad institucional:** el escudo de la Institución Educativa John F. Kennedy aparece en la cabecera, en el hueco superior de la tabla (períodos 1 a 3, grupos 3 a 12), en el pie de página y como icono de la pestaña.
 - **Dos vistas:** la tabla atenúa los elementos que no coinciden con los filtros; la lista muestra los resultados coincidentes.
 - **Ficha de detalle:** presenta identidad, configuración electrónica, distribución por capas, electronegatividad, estado físico, densidad, puntos de fusión y ebullición, historia, origen del nombre, usos y curiosidades. Incluye un enlace a la referencia del elemento en PubChem.
 - **Elemento del día:** selecciona un elemento según la fecha local del equipo. También hay un botón para explorar un elemento aleatorio.
@@ -55,6 +57,8 @@ Esteban/
 │   └── styles.css
 ├── data/
 │   └── editorial-es.js
+├── img/
+│   └── logo-jfk.png
 ├── js/
 │   ├── elements-data.js
 │   └── app.js
@@ -113,6 +117,10 @@ Utiliza una pila de fuentes del sistema; no descarga una fuente externa. Los ico
 
 Estos textos se mantienen separados de las propiedades numéricas. Para corregir un uso o una curiosidad, edita este archivo; no necesitas regenerar los datos tabulares.
 
+### `img/`: escudo de la institución
+
+`logo-jfk.png` es el escudo de la Institución Educativa John F. Kennedy, recortado en círculo con fondo transparente (512 × 512 px) para que se vea bien en ambos temas. Lo usan la cabecera, el pie de página, el icono de la pestaña y la tarjeta que `app.js` coloca en el hueco superior de la tabla.
+
 ### `js/`: datos preparados y comportamiento
 
 **`elements-data.js`** define `window.PERIODIC_ELEMENTS`, el arreglo de 118 elementos que consume la aplicación. Es un archivo generado por `scripts/build-elements-data.ps1` y ya está incluido para poder abrir la página directamente.
@@ -131,7 +139,7 @@ Sus campos se organizan así:
 | `discoveryYear`, `discoveryLabel`, `discoveredBy` | Información del descubrimiento, incluyendo etiquetas como «Antigüedad». |
 | `description`, `sourceUrl` | Descripción breve en español y enlace de referencia. |
 
-**`app.js`** contiene la lógica de la interfaz. Lee ambos objetos globales, valida los datos, construye tarjetas y filtros, procesa búsquedas, genera sugerencias, alterna vistas, abre y cierra fichas, aplica el tema y gestiona los eventos del ratón y teclado. También calcula el elemento del día e interpreta el enlace inicial `#elemento-N`.
+**`app.js`** contiene la lógica de la interfaz. Lee ambos objetos globales, valida los datos, construye tarjetas y filtros, procesa búsquedas, genera sugerencias, alterna vistas, abre y cierra fichas, aplica el tema y gestiona los eventos del ratón y teclado. También calcula el elemento del día e interpreta el enlace inicial `#elemento-N`. La lista `categories` define, para cada familia, su nombre, color y la descripción (`description`) que se muestra en la nota de los filtros y en la ventana de la leyenda.
 
 Al iniciar verifica que existan 118 registros, números atómicos y símbolos únicos, orden consecutivo, categorías válidas, capas cuya suma corresponda al número atómico y contenido editorial para cada símbolo. Si detecta problemas, muestra un mensaje en la página y los detalles en la consola del navegador.
 
@@ -251,11 +259,13 @@ Las comprobaciones satisfactorias imprimen mensajes `OK`; una aserción fallida 
 | Estructura, secciones o textos fijos de la página | `index.html` |
 | Colores, tamaños, disposición o animaciones | `css/styles.css` |
 | Búsqueda, filtros, vistas o comportamiento de la ficha | `js/app.js` |
+| Explicación de una familia química | Campo `description` de la lista `categories` en `js/app.js` |
+| Escudo de la institución | `img/logo-jfk.png` (conserva el nombre o actualiza las referencias en `index.html` y `js/app.js`) |
 | Origen del nombre, usos o curiosidades | `data/editorial-es.js` |
 | Propiedades y normalización del conjunto de elementos | Los JSON y/o `scripts/build-elements-data.ps1`; después regenera los datos. |
 | Comprobaciones automáticas de la interfaz | `scripts/browser-smoke-test.ps1` |
 
-Para publicar la aplicación en un alojamiento de archivos estáticos, copia `index.html`, `css/styles.css`, `js/elements-data.js`, `js/app.js` y `data/editorial-es.js`, conservando sus rutas relativas. No hay un paso de compilación ni secretos o credenciales que configurar.
+Para publicar la aplicación en un alojamiento de archivos estáticos, copia `index.html`, `css/styles.css`, `js/elements-data.js`, `js/app.js`, `data/editorial-es.js` e `img/logo-jfk.png`, conservando sus rutas relativas. No hay un paso de compilación ni secretos o credenciales que configurar.
 
 Conserva los JSON y `scripts` en la copia de desarrollo para poder mantener los datos y ejecutar pruebas. `readme.md` documenta el proyecto; `screenshots` y `.browser-*` no son necesarios para publicar la página.
 

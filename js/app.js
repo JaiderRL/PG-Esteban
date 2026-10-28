@@ -5,16 +5,46 @@
   const editorial = window.ELEMENT_EDITORIAL || {};
 
   const categories = [
-    { id: "alkali", label: "Metales alcalinos", singular: "Metal alcalino", css: "--alkali" },
-    { id: "alkaline", label: "Alcalinotérreos", singular: "Metal alcalinotérreo", css: "--alkaline" },
-    { id: "transition", label: "Metales de transición", singular: "Metal de transición", css: "--transition" },
-    { id: "post-transition", label: "Metales postransición", singular: "Metal postransición", css: "--post-transition" },
-    { id: "metalloid", label: "Metaloides", singular: "Metaloide", css: "--metalloid" },
-    { id: "nonmetal", label: "No metales", singular: "No metal", css: "--nonmetal" },
-    { id: "halogen", label: "Halógenos", singular: "Halógeno", css: "--halogen" },
-    { id: "noble", label: "Gases nobles", singular: "Gas noble", css: "--noble" },
-    { id: "lanthanide", label: "Lantánidos", singular: "Lantánido", css: "--lanthanide" },
-    { id: "actinide", label: "Actínidos", singular: "Actínido", css: "--actinide" },
+    {
+      id: "alkali", label: "Metales alcalinos", singular: "Metal alcalino", css: "--alkali",
+      description: "Grupo 1, sin contar el hidrógeno. Son metales blandos y muy reactivos: tienen un solo electrón en su última capa y reaccionan con el agua formando hidróxidos.",
+    },
+    {
+      id: "alkaline", label: "Alcalinotérreos", singular: "Metal alcalinotérreo", css: "--alkaline",
+      description: "Grupo 2. Metales reactivos, aunque menos que los alcalinos, con dos electrones en su última capa. El calcio y el magnesio son los más conocidos.",
+    },
+    {
+      id: "transition", label: "Metales de transición", singular: "Metal de transición", css: "--transition",
+      description: "Ocupan los grupos 3 al 12. Suelen ser metales duros, brillantes y buenos conductores del calor y la electricidad, como el hierro, el cobre y el oro.",
+    },
+    {
+      id: "post-transition", label: "Metales postransición", singular: "Metal postransición", css: "--post-transition",
+      description: "Metales situados entre los de transición y los metaloides, como el aluminio, el estaño y el plomo. Son más blandos y se funden a temperaturas más bajas.",
+    },
+    {
+      id: "metalloid", label: "Metaloides", singular: "Metaloide", css: "--metalloid",
+      description: "Tienen propiedades intermedias entre los metales y los no metales. Algunos, como el silicio y el germanio, son semiconductores y se usan en la electrónica.",
+    },
+    {
+      id: "nonmetal", label: "No metales", singular: "No metal", css: "--nonmetal",
+      description: "Conducen mal el calor y la electricidad y tienden a ganar o compartir electrones. Incluyen el hidrógeno, el carbono, el nitrógeno y el oxígeno, esenciales para la vida.",
+    },
+    {
+      id: "halogen", label: "Halógenos", singular: "Halógeno", css: "--halogen",
+      description: "Grupo 17. Muy reactivos, con siete electrones en su última capa. Su nombre significa «formadores de sales»: al unirse con metales forman sales como la sal común.",
+    },
+    {
+      id: "noble", label: "Gases nobles", singular: "Gas noble", css: "--noble",
+      description: "Grupo 18. Tienen su última capa de electrones completa, por eso casi no reaccionan. Son gases incoloros, como el helio, el neón y el argón.",
+    },
+    {
+      id: "lanthanide", label: "Lantánidos", singular: "Lantánido", css: "--lanthanide",
+      description: "Van del lantano (57) al lutecio (71) y se muestran en una fila aparte. Son metales que se usan en imanes potentes, láseres y pantallas.",
+    },
+    {
+      id: "actinide", label: "Actínidos", singular: "Actínido", css: "--actinide",
+      description: "Van del actinio (89) al laurencio (103) y se muestran en la última fila. Todos son radiactivos; el uranio y el plutonio se usan como combustible nuclear.",
+    },
   ];
 
   const categoryById = new Map(categories.map((category) => [category.id, category]));
@@ -31,6 +61,7 @@
     focusedAtomicNumber: 1,
     lastDialogTrigger: null,
     closeTimer: null,
+    popoverCategory: null,
   };
 
   const refs = {
@@ -42,7 +73,16 @@
     searchClear: document.querySelector("#search-clear"),
     suggestions: document.querySelector("#search-suggestions"),
     filters: document.querySelector("#category-filters"),
+    familyNote: document.querySelector("#family-note"),
+    explorer: document.querySelector("#explorar"),
+    legendSection: document.querySelector(".legend-section"),
     legend: document.querySelector("#category-legend"),
+    familyPopover: document.querySelector("#family-popover"),
+    familyPopoverTitle: document.querySelector("#family-popover-title"),
+    familyPopoverCount: document.querySelector("#family-popover-count"),
+    familyPopoverText: document.querySelector("#family-popover-text"),
+    familyPopoverClose: document.querySelector("#family-popover-close"),
+    familyPopoverShow: document.querySelector("#family-popover-show"),
     reset: document.querySelector("#reset-filters"),
     emptyReset: document.querySelector("#empty-reset"),
     results: document.querySelector("#results-status"),
@@ -202,6 +242,22 @@
       fragment.append(placeholder);
     });
 
+    // Hueco libre de los períodos 1 a 3 entre los grupos 3 y 12.
+    const crest = document.createElement("div");
+    crest.className = "table-crest";
+    crest.style.gridColumn = "4 / 14";
+    crest.style.gridRow = "2 / 5";
+    crest.setAttribute("aria-hidden", "true");
+    crest.innerHTML = `
+      <img src="img/logo-jfk.png" alt="" width="150" height="150" />
+      <span class="table-crest-copy">
+        <small>Institución Educativa</small>
+        <strong>John F. Kennedy</strong>
+        <span>Puerto Boyacá · Tabla periódica de los elementos</span>
+      </span>
+    `;
+    fragment.append(crest);
+
     refs.grid.append(fragment);
   }
 
@@ -244,13 +300,87 @@
 
     const legendFragment = document.createDocumentFragment();
     categories.forEach((category) => {
-      const item = document.createElement("span");
+      const item = document.createElement("button");
+      item.type = "button";
       item.className = "legend-item";
+      item.dataset.category = category.id;
       item.style.setProperty("--category-color", `var(${category.css})`);
-      item.innerHTML = `<i></i><span>${category.label}</span>`;
+      item.setAttribute("aria-expanded", "false");
+      item.setAttribute("aria-controls", "family-popover");
+      item.innerHTML = `
+        <i></i><span>${category.label}</span>
+        <svg class="legend-info" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.2"></circle><path d="M10 9v4.6M10 6.4v.1"></path></svg>
+      `;
       legendFragment.append(item);
     });
     refs.legend.append(legendFragment);
+  }
+
+  function categoryCount(categoryId) {
+    const count = elements.filter((element) => element.category === categoryId).length;
+    return `${count} ${count === 1 ? "elemento" : "elementos"}`;
+  }
+
+  function renderFamilyNote() {
+    const category = categoryById.get([...state.categories].at(-1));
+    refs.familyNote.hidden = !category;
+    if (!category) return;
+    refs.familyNote.style.setProperty("--category-color", `var(${category.css})`);
+    refs.familyNote.innerHTML = `
+      <i aria-hidden="true"></i>
+      <span><strong>${category.label}</strong> · ${categoryCount(category.id)}. ${category.description}</span>
+    `;
+  }
+
+  function positionFamilyPopover(trigger) {
+    const sectionRect = refs.legendSection.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    const width = refs.familyPopover.offsetWidth;
+    const triggerLeft = triggerRect.left - sectionRect.left;
+    const left = Math.max(12, Math.min(triggerLeft, sectionRect.width - width - 12));
+    refs.familyPopover.style.left = `${left}px`;
+    refs.familyPopover.style.top = `${triggerRect.bottom - sectionRect.top + 10}px`;
+    const arrowLeft = Math.max(12, Math.min(triggerLeft - left + 7, width - 24));
+    refs.familyPopover.style.setProperty("--arrow-left", `${arrowLeft}px`);
+  }
+
+  function openFamilyPopover(trigger) {
+    const category = categoryById.get(trigger.dataset.category);
+    if (!category) return;
+    state.popoverCategory = category.id;
+    refs.familyPopover.style.setProperty("--category-color", `var(${category.css})`);
+    refs.familyPopoverTitle.textContent = category.label;
+    refs.familyPopoverCount.textContent = categoryCount(category.id);
+    refs.familyPopoverText.textContent = category.description;
+    refs.legend.querySelectorAll(".legend-item").forEach((item) => {
+      const active = item === trigger;
+      item.classList.toggle("is-active", active);
+      item.setAttribute("aria-expanded", String(active));
+    });
+    refs.familyPopover.hidden = false;
+    positionFamilyPopover(trigger);
+  }
+
+  function closeFamilyPopover({ restoreFocus = false } = {}) {
+    if (refs.familyPopover.hidden) return;
+    const trigger = refs.legend.querySelector(`[data-category="${state.popoverCategory}"]`);
+    refs.familyPopover.hidden = true;
+    state.popoverCategory = null;
+    refs.legend.querySelectorAll(".legend-item").forEach((item) => {
+      item.classList.remove("is-active");
+      item.setAttribute("aria-expanded", "false");
+    });
+    if (restoreFocus) trigger?.focus();
+  }
+
+  function showCategoryInTable(categoryId) {
+    state.query = "";
+    refs.search.value = "";
+    state.categories.clear();
+    state.categories.add(categoryId);
+    closeFamilyPopover();
+    updateResults();
+    refs.explorer.scrollIntoView({ block: "start" });
   }
 
   function searchableText(element) {
@@ -439,6 +569,7 @@
     }
 
     updateFilterButtons();
+    renderFamilyNote();
     renderSuggestions();
   }
 
@@ -776,6 +907,36 @@
 
     refs.reset.addEventListener("click", () => resetFilters());
     refs.emptyReset.addEventListener("click", () => resetFilters({ focusSearch: true }));
+
+    refs.legend.addEventListener("click", (event) => {
+      const item = event.target.closest(".legend-item");
+      if (!item) return;
+      if (state.popoverCategory === item.dataset.category) {
+        closeFamilyPopover();
+      } else {
+        openFamilyPopover(item);
+      }
+    });
+
+    refs.familyPopoverClose.addEventListener("click", () => closeFamilyPopover({ restoreFocus: true }));
+    refs.familyPopoverShow.addEventListener("click", () => showCategoryInTable(state.popoverCategory));
+
+    document.addEventListener("click", (event) => {
+      if (refs.familyPopover.hidden) return;
+      if (event.target.closest("#family-popover, .legend-item")) return;
+      closeFamilyPopover();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !refs.familyPopover.hidden && !refs.dialog.open) {
+        closeFamilyPopover({ restoreFocus: true });
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      const trigger = refs.legend.querySelector(".legend-item.is-active");
+      if (trigger && !refs.familyPopover.hidden) positionFamilyPopover(trigger);
+    });
 
     refs.grid.addEventListener("click", (event) => {
       const card = event.target.closest(".element-card");

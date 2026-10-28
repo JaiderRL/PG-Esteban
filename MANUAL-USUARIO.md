@@ -36,14 +36,15 @@ Al abrirse correctamente verás la portada, un elemento destacado, el buscador y
 
 ## 4. Recorrido por la pantalla
 
-- **Encabezado:** contiene la marca Elementa y el control para cambiar entre tema claro y oscuro.
+- **Encabezado:** contiene la marca Elementa, el escudo de la Institución Educativa John F. Kennedy y el control para cambiar entre tema claro y oscuro.
 - **Presentación:** introduce la aplicación y ofrece un botón para elegir un elemento al azar.
 - **Elemento destacado:** muestra el elemento del día. Pulsa su tarjeta para abrir su ficha. La selección se calcula con la fecha local del dispositivo.
 - **Buscador:** encuentra elementos por nombre, símbolo químico, número atómico o alias disponible. Mientras escribes pueden aparecer sugerencias.
 - **Controles de vista:** permiten alternar entre la tabla periódica y una lista de resultados.
-- **Filtros por familia:** muestran categorías químicas que se pueden combinar entre sí y con la búsqueda.
-- **Tabla o lista:** cada elemento aparece como una tarjeta seleccionable.
-- **Leyenda y guía:** ayudan a interpretar los colores y los datos que aparecen en las tarjetas.
+- **Filtros por familia:** muestran categorías químicas que se pueden combinar entre sí y con la búsqueda. Al seleccionar una familia aparece una explicación breve de lo que la caracteriza.
+- **Tabla o lista:** cada elemento aparece como una tarjeta seleccionable. El espacio libre de la parte superior de la tabla muestra el escudo y el nombre de la institución.
+- **Leyenda y guía:** ayudan a interpretar los colores y los datos que aparecen en las tarjetas. Cada familia de la leyenda se puede pulsar para ver qué es.
+- **Pie de página:** incluye el escudo y el nombre de la institución.
 - **Ficha del elemento:** una ventana con propiedades, historia, usos y curiosidades. Se abre al seleccionar una tarjeta.
 
 ## 5. Tareas frecuentes
@@ -62,6 +63,13 @@ La búsqueda ignora mayúsculas y tildes. Si no hay coincidencias, la página lo
 Selecciona una o varias categorías en el área de filtros. La búsqueda y los filtros se aplican al mismo tiempo. En la tabla, los elementos que no coinciden quedan atenuados; en la lista aparecen los resultados coincidentes. Usa el botón para restablecer los filtros cuando quieras empezar de nuevo.
 
 Las familias disponibles incluyen metales alcalinos, alcalinotérreos, metales de transición y postransición, metaloides, no metales, halógenos, gases nobles, lantánidos y actínidos. La leyenda de la página muestra sus colores.
+
+### Saber qué es cada familia
+
+Hay dos formas de ver la explicación de una familia:
+
+- **Desde los filtros:** al pulsar una familia, debajo de los filtros aparece un recuadro con su nombre, la cantidad de elementos que la forman y una descripción corta. Si eliges varias, se muestra la última que seleccionaste.
+- **Desde la leyenda «Familias químicas»:** pulsa el nombre de una familia y se abre una pequeña ventana con su explicación. El botón **Ver en la tabla** aplica ese filtro y te lleva a la tabla. Para cerrar la ventana, pulsa la ×, haz clic fuera de ella, pulsa `Escape` o vuelve a pulsar la misma familia.
 
 ### Cambiar entre tabla y lista
 
@@ -96,7 +104,7 @@ Pulsa el botón de tema del encabezado para cambiar entre claro y oscuro. Inicia
 | `Enter` en el buscador | Abre la sugerencia elegida o la primera disponible. |
 | Flechas sobre una tarjeta de la tabla | Mueve el foco entre elementos. |
 | `Enter` o espacio sobre un botón/tarjeta | Activa el control enfocado. |
-| `Escape` | Cierra sugerencias o la ficha abierta. |
+| `Escape` | Cierra sugerencias, la explicación de una familia o la ficha abierta. |
 
 Los controles tienen nombres accesibles para lectores de pantalla, y la página contempla la preferencia del sistema por movimiento reducido. También puedes recorrer botones y enlaces con `Tab` y `Mayús + Tab`.
 
@@ -142,6 +150,7 @@ La carpeta principal (raíz) reúne la página, los datos fuente y la documentac
 | --- | --- |
 | `css/` | Guarda las hojas de estilo. `styles.css` define colores, tipografía, distribución, adaptación a móviles y temas claro/oscuro. |
 | `data/` | Contiene textos editoriales en español: origen de los nombres, usos y curiosidades de cada elemento. |
+| `img/` | Contiene `logo-jfk.png`, el escudo de la institución que aparece en el encabezado, la tabla, el pie de página y la pestaña del navegador. |
 | `js/` | Contiene el comportamiento de la aplicación (`app.js`) y los 118 registros preparados que consume la página (`elements-data.js`). |
 | `scripts/` | Incluye herramientas opcionales de mantenimiento: el generador de datos y la prueba automatizada del navegador. |
 | `screenshots/` | Conserva capturas de pantalla tomadas durante revisiones y pruebas. La aplicación no las necesita para funcionar. |
@@ -180,6 +189,10 @@ Edita el símbolo correspondiente en `data/editorial-es.js`. Allí se encuentran
 
 Edita `css/styles.css`. Para modificar secciones fijas, como títulos, instrucciones o textos de la página, edita `index.html`.
 
+### Cambiar la explicación de una familia
+
+Las descripciones de cada familia están en `js/app.js`, en la lista `categories`, dentro del campo `description`. Guarda el archivo y vuelve a cargar la página.
+
 ### Cambiar datos químicos
 
 Los registros que lee la interfaz se generan desde `source-elements.json`, `pubchem-snapshot.json` y las reglas de `scripts/build-elements-data.ps1`. Después de cambiar una fuente o regla, abre PowerShell en la carpeta del proyecto y ejecuta:
@@ -202,7 +215,7 @@ El script comprueba algunos casos de búsqueda, ficha, filtros, tema y pantalla 
 
 ### Publicar la página
 
-Para alojarla como sitio estático, conserva las rutas relativas y publica `index.html`, `css/styles.css`, `js/app.js`, `js/elements-data.js` y `data/editorial-es.js`. Las fuentes JSON y los scripts solo son necesarios si se planea mantener y regenerar los datos. No hace falta publicar los perfiles `.browser-*` ni las capturas.
+Para alojarla como sitio estático, conserva las rutas relativas y publica `index.html`, `css/styles.css`, `js/app.js`, `js/elements-data.js`, `data/editorial-es.js` e `img/logo-jfk.png`. Las fuentes JSON y los scripts solo son necesarios si se planea mantener y regenerar los datos. No hace falta publicar los perfiles `.browser-*` ni las capturas.
 
 ## 12. Problemas comunes
 
